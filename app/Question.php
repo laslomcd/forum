@@ -7,6 +7,9 @@ use Illuminate\Support\Str;
 
 class Question extends Model
 {
+    use VotableTrait;
+
+
     protected $guarded = [];
 
     public function user()
@@ -75,21 +78,6 @@ class Question extends Model
     public function getFavoritesCountAttribute()
     {
         return $this->favorites->count();
-    }
-
-    public function votes()
-    {
-        return $this->morphToMany(User::class , 'votable');
-    }
-
-    public function downVotes()
-    {
-        return $this->votes()->wherePivot('vote', -1);
-    }
-
-    public function upVotes()
-    {
-        return $this->votes()->wherePivot('vote', 1);
     }
 
 }
