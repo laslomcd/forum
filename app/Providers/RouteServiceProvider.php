@@ -34,7 +34,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         //
         Route::bind('slug', function ($slug) {
-            $question = Question::with(['answers.user','answers' => function($query) {
+            $question = Question::with(['user','answers.user','answers' => function($query) {
                 $query->orderBy('votes_count', 'desc');
             }])->where('slug', $slug)->first();
             return $question ? $question : abort(404, 'Page Not Found');
