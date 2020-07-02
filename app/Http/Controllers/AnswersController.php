@@ -4,15 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Answer;
 use App\Question;
+use Exception;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use function compact;
 use function redirect;
+use function response;
 
 class AnswersController extends Controller
 {
@@ -54,7 +57,7 @@ class AnswersController extends Controller
      * @param Request $request
      * @param Question $question
      * @param Answer $answer
-     * @return RedirectResponse
+     * @return JsonResponse|RedirectResponse
      * @throws AuthorizationException
      */
     public function update(Request $request, Question $question, Answer $answer)
@@ -64,6 +67,12 @@ class AnswersController extends Controller
             'body' => 'required'
         ]));
 
+        if($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Your answer has been updated',
+                'body_html' => $answer->body_html
+            ]);
+        }
         return redirect()->route('questions.show', $question->slug)->with('success', 'Your answer has been updated');
     }
 
@@ -73,6 +82,8 @@ class AnswersController extends Controller
      * @param Question $question
      * @param Answer $answer
      * @return RedirectResponse
+     * @throws AuthorizationException
+     * @throws Exception
      */
     public function destroy(Question $question, Answer $answer)
     {
