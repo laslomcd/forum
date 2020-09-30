@@ -9,7 +9,16 @@
                 bodyHtml: this.answer.body_html,
                 id: this.answer.id,
                 questionId: this.answer.question_id,
-                beforeEditCache: null
+                beforeEditCache: null,
+            }
+        },
+        computed: {
+            isInvalid() {
+                return this.body.length < 10
+            },
+
+            endpoint() {
+                return `/questions/${this.questionId}/answers/${this.id}`
             }
         },
         methods: {
@@ -24,19 +33,50 @@
             },
 
             update() {
-                let postUrl = `/questions/${this.questionId}/answers/${this.id}`
-                axios.patch(postUrl, {
+                axios.patch(this.endpoint, {
                     body: this.body
                 })
                 .then(res => {
-                    console.log(res)
                     this.editing = false
                     this.bodyHtml = res.data.body_html
-                    alert(res.data.message)
+                    this.$toast.success(res.data.message, "Success", { timeout: 3000, transitionIn: flipInX, transitionOut: flipOutX})
                 })
                 .catch(err => {
-                    console.log('Something went wrong')
+                    this.$toast.error(err.response.data.message, "Error", { timeout: 3000})
                 })
+            },
+
+            destroy(){
+                this.$toast.question('Are you sure about that?', "Question", {
+                    timeout: 20000,
+                    close: false,
+                    overlay: true,
+                    displayMode: 'once',
+                    id: 'question',
+                    zindex: 999,
+                    title: 'Hey',
+                    message: '',
+                    position: 'center',
+                    buttons: [
+                        ['<button><b>YES</b></button>',  (instance, toast) => {
+
+                            axios.delete(this.endpoint)
+                                .then(res => {
+                                    $(this.$el).fadeOut(500, () => {
+                                        this.$toast.success(res.data.message, "Success", { timeout: 3000})
+                                    })
+                                })
+
+                            instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+
+                        }, true],
+                        ['<button>NO</button>', function (instance, toast) {
+
+                            instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+
+                        }],
+                    ],
+                });
             }
         }
     }

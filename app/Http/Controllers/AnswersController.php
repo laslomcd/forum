@@ -81,7 +81,7 @@ class AnswersController extends Controller
      *
      * @param Question $question
      * @param Answer $answer
-     * @return RedirectResponse
+     * @return JsonResponse|RedirectResponse
      * @throws AuthorizationException
      * @throws Exception
      */
@@ -89,6 +89,12 @@ class AnswersController extends Controller
     {
         $this->authorize('delete', $answer);
         $answer->delete();
+
+        if(request()->expectsJson()) {
+            return response()->json([
+                'message' => 'Your answer has been deleted successfully'
+            ]);
+        }
         return back()->with('success', 'Your answer has been deleted successfully');
     }
 }

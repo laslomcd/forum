@@ -13,7 +13,7 @@ class Question extends Model
 
     protected $guarded = [];
 
-    protected $appends = ['created_date'];
+    protected $appends = ['created_date', 'is_favorited', 'favorites_count'];
 
     public function user()
     {

@@ -4,9 +4,9 @@
         <div class="media-body mt-2">
             <form v-if="editing" @submit.prevent="update">
                 <div class="form-group">
-                    <textarea class="form-control" v-model="body" cols="30" rows="10"></textarea>
+                    <textarea class="form-control" v-model="body" cols="30" rows="10" required></textarea>
                 </div>
-                <button class="btn btn-outline-secondary" type="submit">Update</button>
+                <button class="btn btn-outline-secondary" type="submit" :disabled="isInvalid">Update</button>
                 <button class="btn btn-outline-danger" @click="cancel">Cancel</button>
             </form>
             <div v-else>
@@ -18,11 +18,7 @@
                                 <a @click.prevent="edit" class="btn btn-sm btn-outline-info">Edit</a>
                             @endcan
                             @can('delete', $answer)
-                                <form class="form-delete" action="{{ route('questions.answers.destroy', [$question->id, $answer->id]) }}" method="POST">
-                                    @method('DELETE')
-                                    @csrf
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?')">Delete</button>
-                                </form>
+                                <button @click="destroy" class="btn btn-sm btn-outline-danger">Delete</button>
                             @endcan
                         </div>
                     </div>
